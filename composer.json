@@ -1,0 +1,31 @@
+{
+    "name": "barnou/vdmscraper",
+    "description": "Scraper to get last 200 vdm posts",
+    "type": "project",
+    "require": {
+        "slim/slim": "^3.8",
+        "fabpot/goutte": "^3.2",
+        "guiguiboy/php-cli-progress-bar": "^0.0.4"
+    },
+    "require-dev": {
+        "pavlakis/slim-behat-extension": "^1.0"
+    },
+    "scripts": {
+        "download-vdm": [
+            "php app/scripts/download.php"
+        ]
+    },
+    "license": "MIT License",
+    "authors": [
+        {
+            "name": "Baptiste Arnou",
+            "email": "b.arnou05@gmail.com"
+        }
+    ],
+     "autoload": {
+        "psr-4": {
+            "App\\": "app/src",
+            "Scripts\\": "app/scripts"
+        }
+    }
+}
