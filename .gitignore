@@ -1,2 +1,2 @@
-composer.lock
-/vendor/
+/api/composer.lock
+/api/vendor/
