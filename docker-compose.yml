@@ -1,7 +1,7 @@
 databases:
   image: postgres:9.4
   ports:
-    - "5432:5432"
+    - "54320:5432"
   volumes:
     - ./sql:/var/app/sql
     - ./db:/var/app/db
