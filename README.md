@@ -31,14 +31,14 @@ Run `docker-compose up` inside the `vdm-scraper` folder to start the system.
 #### Populate the databases
 Postgres databases are empty, you need to perform some SQL queries to initialize them.
 Ready to use SQL script is provided in the `vdm-scraper/sql` folder.
-Then to get some datas from <http://viedemerde.fr/>, you have to in `vdm-scraper` and run 
+Then to get some datas from <http://viedemerde.fr/>, you have to go in `vdm-scraper` and run 
 `docker-compose run api php download.php -n <post_limit>` By default post_limit = 200
 
 #### Check if it works
 Using your favorite browser go to  : <http://127.0.0.1:8082>
 The api routes are:
 * <http://127.0.0.2:8082/posts?author=baptiste&city=angers&country=france&from=2017-04-10&to=2017-04-15>
-> This route return all posts filtered optionnaly by `author`, `city`, `country`, `from` and `to` dates
+> This route return all posts optionnaly filtered by `author`, `city`, `country`, `from` and `to` dates
 * <http://127.0.0.2:8082/post/{post_id}>
 > This route return a unique post identify by his id
 
