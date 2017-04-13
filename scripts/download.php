@@ -1,9 +1,11 @@
 <?php
 
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../api/vendor/autoload.php';
 
 use ProgressBar\Manager;
 use Goutte\Client;
+use Lib\Lib\DB;
+
 
 function cleanString($string) {
     $string = trim($string);
@@ -12,6 +14,7 @@ function cleanString($string) {
     $string = str_replace("\t", '', $string); // remove tabs
     $string = str_replace("\n", '', $string); // remove new lines
     $string = str_replace("\r", '', $string); // remove carriage return
+    //$string = str_replace("'","''", $string); // change brackets to double brackets in order to insert in database without errors
     return $string;
 }
 
@@ -19,7 +22,17 @@ function cleanString($string) {
 $months = ['janvier'=> '01', 'février'=> '02', 'mars'=> '03', 'avril'=> '04', 'mai'=> '05', 'juin'=> '06','juillet'=> '07', 'août'=> '08', 'septembre'=> '09', 'octobre'=> '10', 'novembre'=> '11', 'décembre'=> '12'];
 
 $i = 1;
+
+$options = getopt("n:");
+
 $wantedSize = 200;
+
+if(count($options) > 0 && isset($options['n'])) {
+    if(intval($options['n']) != 0) {
+        $wantedSize = intval($options['n']);
+    }
+}
+
 $running = true;
 $vdmArray = [];
 $errors = [];
@@ -64,20 +77,18 @@ do {
                 $placeArray = explode('-',$matches[3]);
 
                 preg_match('/[A-z]+ (\d+) ([A-zé]+) (\d+) ([01]?\d|2[0-3]):([0-5]?\d)/i', $date, $dateArray);
-                
+
                 $day = sprintf('%02d', intval($dateArray[1]));
                 $month = $months[$dateArray[2]];
                 $year = $dateArray[3];
                 $hours = $dateArray[4];
                 $minutes = $dateArray[5];
-
-                $timestamp = strtotime("$year-$month-$day $hours:$minutes CEST");
                 
-                $vdmObject->datelog = $timestamp;
+                $vdmObject->datelog = $year."-".$month."-".$day." ".$hours.":".$minutes;
                 $vdmObject->username = trim($matches[1]," -");
-                $vdmObject->country = strlen(trim($placeArray[1])) > 0 ? trim($placeArray[1]):null;
-                $vdmObject->city = strlen(trim($placeArray[0])) > 0 ? trim($placeArray[0]): null;
-                $vdmObject->vdm = cleanString($vdmNode->filter('p > a')->text());
+                $vdmObject->country = strlen(trim($placeArray[0])) > 0 ? trim($placeArray[0]):null;
+                $vdmObject->city = strlen(trim($placeArray[1])) > 0 ? trim($placeArray[1]): null;
+                $vdmObject->content = cleanString($vdmNode->filter('p > a')->text());
 
                 // If we have enought vdm posts, then we stop
                 if(count($vdmArray) >= $wantedSize) {
@@ -98,5 +109,14 @@ if(count($errors) > 0) {
         echo $error."\n";
     }
 } else {
-    var_dump(json_encode($vdmArray));
+    usort($vdmArray, function($a, $b) {
+        return strtotime($a->datelog) - strtotime($b->datelog);
+    });
+
+    $db = DB::getDB('DATA');
+
+    $stmt = $db->prepare("INSERT INTO posts (post_datelog, post_content, post_author, post_city, post_country) VALUES (:datelog, :content, :username, :city, :country)");
+    foreach($vdmArray as $vdm) {
+       $stmt->execute((array)$vdm);
+    }
 }

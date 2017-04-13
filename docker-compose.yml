@@ -1,0 +1,19 @@
+databases:
+  image: postgres:9.4
+  ports:
+    - "5432:5432"
+  volumes:
+    - ./sql:/var/app/sql
+    - ./db:/var/app/db
+  #command: sed -i "s/^timezone = 'UTC'/timezone = 'localtime'/" /var/lib/postgresql/data/postgresql.conf
+
+api:
+  build: api
+  ports:
+    - "8082:80"
+  volumes:
+    - ./api:/var/www/api/
+    - ./scripts:/var/www/scripts
+  env_file: config/api.env
+  links:
+    - databases

@@ -3,13 +3,24 @@
     "description": "Scraper to get last 200 vdm posts",
     "type": "project",
     "require": {
+        "php": "> 5.3.0",
         "slim/slim": "^3.8",
         "fabpot/goutte": "^3.2",
-        "guiguiboy/php-cli-progress-bar": "^0.0.4"
+        "guiguiboy/php-cli-progress-bar": "^0.0.4",
+        "IT/lib-tools": "dev-master",
+        "slimphp-api/slim-json":"dev-master"
     },
+    "minimum-stability": "dev",
+    "prefer-stable" : true,
     "require-dev": {
         "pavlakis/slim-behat-extension": "^1.0"
     },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/barnou/lib-tools.git"
+        }
+    ],
     "scripts": {
         "download-vdm": [
             "php app/scripts/download.php"
@@ -24,7 +35,8 @@
     ],
      "autoload": {
         "psr-4": {
-            "App\\": "app/src",
+            "App\\Controller\\": "app/controllers",
+            "App\\DaO\\": "app/daos",
             "Scripts\\": "app/scripts"
         }
     }
